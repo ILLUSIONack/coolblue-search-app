@@ -16,7 +16,6 @@ extension SearchListView {
         private let productService: ProductServiceProtocol
         private var task: Task<Void, Error>?
         
-        
         private var currentPage = 1
         private var totalPages = 1
         
