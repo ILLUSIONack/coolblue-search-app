@@ -5,6 +5,10 @@
 ### Design Pattern: MVVM-C Architecture
 The basic app follows the **MVVM-C** (Model-View-ViewModel-Coordinator) architecture, that promotes separation of concerns and maintains a clean structure. Here's how it works:
 
+- Minimum deployment version is 18.2
+- Xcode version 16.2
+- Only portrait orientation supported for iPhone and iPad
+
 - **Model**: Represents the app’s data using DTO's
 - **View**: Handles the UI and user interactions.
 - **ViewModel**: Provides data to the view and responds to user actions and business logic.
