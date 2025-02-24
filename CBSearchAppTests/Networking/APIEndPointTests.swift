@@ -13,7 +13,7 @@ final class APIEndPointTests: XCTestCase {
         
         // Then
         XCTAssertEqual(sut.url?.absoluteString, expectedURL, "Incorrect URL")
-        XCTAssertEqual(method, .get, "The HTTP method for search endpoint should be GET.")
+        XCTAssertEqual(method, .GET, "The HTTP method for search endpoint should be GET.")
     }
     
     private struct Environment {

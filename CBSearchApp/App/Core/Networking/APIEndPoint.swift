@@ -21,7 +21,7 @@ enum APIEndPoint {
     var method: HTTPMethod {
         switch self {
         case .search:
-            return .get
+            return .GET
         }
     }
     

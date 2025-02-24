@@ -6,9 +6,8 @@ protocol SearchListViewModelProtocol: ObservableObject {
     func loadNextPageIfNeeded(currentProduct product: Product)
     func performedAction(action: UserAction)
 }
+
 extension SearchListView {
-    
-    @MainActor
     final class ViewModel: SearchListViewModelProtocol {
         @Published var viewState: ViewState = ViewState()
         
@@ -53,7 +52,6 @@ extension SearchListView {
                 viewState.state = response.products.isEmpty ? .noResults : .loaded(products: viewState.products)
             } catch {
                 viewState.state = .error
-                print("Failed to load page \(currentPage): \(error)")
             }
         }
     

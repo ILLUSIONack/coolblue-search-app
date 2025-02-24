@@ -14,7 +14,6 @@ protocol CoordinatorViewViewModelProtocol: ObservableObject {
 
 extension CoordinatorView {
     
-    @MainActor
     final class ViewModel: CoordinatorViewViewModelProtocol, CoordinatorViewModelDelegate {
         @Published var path = NavigationPath()
         

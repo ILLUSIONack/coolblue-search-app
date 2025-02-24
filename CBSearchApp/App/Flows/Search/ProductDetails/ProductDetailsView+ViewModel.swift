@@ -6,8 +6,6 @@ protocol ProductDetailsViewModelProtocol: ObservableObject, AnyObject {
 }
 
 extension ProductDetailsView {
-    
-    @MainActor
     final class ViewModel: ProductDetailsViewModelProtocol {
         @Published var product: Product
         weak var delegate: CoordinatorViewModelDelegate?
