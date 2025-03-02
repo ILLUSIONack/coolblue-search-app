@@ -16,7 +16,6 @@ extension SearchListView {
         private var task: Task<Void, Error>?
         
         private var currentPage = 1
-        private var totalPages = 1
         
         weak var delegate: CoordinatorViewModelDelegate?
         
@@ -46,6 +45,7 @@ extension SearchListView {
             }
             guard viewState.hasMorePages else { return }
             do {
+                guard !Task.isCancelled else { return }
                 let response = try await productService.search(by: viewState.searchText, page: currentPage)
                 viewState.products.append(contentsOf: response.products)
                 viewState.hasMorePages = response.totalResults - response.pageSize * currentPage > 0
@@ -56,6 +56,7 @@ extension SearchListView {
         }
     
         private func createFetchPageTask() {
+            task?.cancel()
             task = Task {
                 await fetchPage()
             }

@@ -13,24 +13,20 @@ struct SearchListView: View {
         static let listTopPadding: CGFloat = 16.0
         static let noResultsImageName: String = "magnifyingglass.circle.fill"
         static let errorImageName: String = "exclamationmark.warninglight.fill"
-        
-        // TODO: - Use lokalise or other lokalisation framework instead
         static let searchPrompt: String = "Search Products"
         static let noResultsText: String = "Try searching for a product"
         static let errorText: String = "An Error has occured while fetching products"
     }
     
     var body: some View {
-        GeometryReader { geometryReader in
-            ZStack {
-                switch viewModel.viewState.state {
-                case .error:
-                    errorView
-                case .noResults:
-                    noResultsView
-                case .loaded(let products):
-                    content(products, geometryReader.size.width)
-                }
+        ZStack {
+            switch viewModel.viewState.state {
+            case .error:
+                errorView
+            case .noResults:
+                noResultsView
+            case .loaded(let products):
+                content(products)
             }
         }
         .navigationTitle(viewModel.navigationTitle)
@@ -41,19 +37,17 @@ struct SearchListView: View {
         }
     }
     
-    @ViewBuilder
-    private func content(_ products: [Product], _ width: CGFloat) ->some View {
+    private func content(_ products: [Product]) ->some View {
         ScrollView(.vertical, showsIndicators: false) {
             LazyVStack(alignment: .leading, spacing: 0) {
                 ForEach(products, id: \.productId) { product in
-                    productItemView(product, width)
+                    productItemView(product)
                 }
             }
         }
         .accessibilityIdentifier(AccessibilityIdentifier.SearchList.scrollView)
     }
     
-    @ViewBuilder
     private var noResultsView: some View {
         VStack(alignment: .center) {
             Image(systemName: Constants.noResultsImageName)
@@ -70,7 +64,6 @@ struct SearchListView: View {
         .accessibilityIdentifier(AccessibilityIdentifier.SearchList.noResultsView)
     }
     
-    @ViewBuilder
     private var errorView: some View {
         VStack(alignment: .center) {
             Image(systemName: Constants.errorImageName)
@@ -87,7 +80,7 @@ struct SearchListView: View {
         .accessibilityIdentifier(AccessibilityIdentifier.SearchList.errorView)
     }
     
-    private func productItemView(_ product: Product, _ width: CGFloat) -> some View {
+    private func productItemView(_ product: Product) -> some View {
         Button {
             viewModel.performedAction(action: .productDetailsTapped(product: product))
         } label: {

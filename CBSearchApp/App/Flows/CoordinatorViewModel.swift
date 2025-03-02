@@ -17,12 +17,12 @@ extension CoordinatorView {
     final class ViewModel: CoordinatorViewViewModelProtocol, CoordinatorViewModelDelegate {
         @Published var path = NavigationPath()
         
-        private let container: DepdencyContainerProtocol
+        private let container: DependencyContainerProtocol
         var searchListView: SearchListView {
             SearchListView.build(container: container, delegate: self)
         }
         
-        init(container: DepdencyContainerProtocol) {
+        init(container: DependencyContainerProtocol) {
             self.container = container
         }
         

@@ -1,10 +1,10 @@
 import Foundation
 
-protocol DepdencyContainerProtocol {
+protocol DependencyContainerProtocol {
     func resolveProductService() -> ProductServiceProtocol
 }
 
-final class DepdencyContainer: DepdencyContainerProtocol {
+final class DependencyContainer: DependencyContainerProtocol {
     private let productService: ProductServiceProtocol
     private let apiSerice: APIServiceProtocol
     
