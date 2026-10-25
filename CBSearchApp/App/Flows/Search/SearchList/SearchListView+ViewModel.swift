@@ -8,61 +8,75 @@ protocol SearchListViewModelDelegate: AnyObject {
 extension SearchListView {
     @MainActor
     final class ViewModel: ObservableObject {
-        @Published var viewState: ViewState = ViewState()
         
-        var navigationTitle: String = "Products"
+        @Published var viewState: ViewState
+        
+        private let searchDebounce: Duration
         private let productService: ProductServiceProtocol
-        private var task: Task<Void, Error>?
-        
-        private var currentPage = 1
-        
         private weak var delegate: SearchListViewModelDelegate?
+        private(set) var fetchPageTask: Task<Void, Never>?
         
-        init(productService: ProductServiceProtocol, delegate: SearchListViewModelDelegate) {
+        private var currentPage = 0
+        private var isLoadingPage = false
+        
+        init(
+            productService: ProductServiceProtocol,
+            delegate: SearchListViewModelDelegate,
+            searchDebounce: Duration = .milliseconds(300)
+        ) {
             self.productService = productService
             self.delegate = delegate
+            self.viewState = ViewState()
+            self.searchDebounce = searchDebounce
         }
         
         func searchProducts(query: String) {
             viewState.searchText = query
             resetSearch()
-            createFetchPageTask()
-        }
-        
-        func loadNextPageIfNeeded(currentProduct product: Product) {
-            guard viewState.hasMorePages else { return }
-            if product == viewState.products.last {
-                currentPage += 1
-                createFetchPageTask()
-            }
-        }
-        
-        private func fetchPage() async {
-            if viewState.searchText.isEmpty {
+            guard !query.isEmpty else {
                 viewState.state = .noResults
                 return
             }
-            guard viewState.hasMorePages else { return }
+            viewState.state = .loading
+            createFetchPageTask(page: 1, delay: searchDebounce)
+        }
+        
+        func loadNextPageIfNeeded(currentProduct product: Product) {
+            guard viewState.hasMorePages, !isLoadingPage, product == viewState.products.last else { return }
+            createFetchPageTask(page: currentPage + 1)
+        }
+        
+        private func fetchPage(query: String, page: Int) async {
             do {
+                let response = try await productService.search(by: query, page: page)
                 guard !Task.isCancelled else { return }
-                let response = try await productService.search(by: viewState.searchText, page: currentPage)
+                currentPage = page
                 viewState.products.append(contentsOf: response.products)
-                viewState.hasMorePages = response.totalResults - response.pageSize * currentPage > 0
-                viewState.state = response.products.isEmpty ? .noResults : .loaded(products: viewState.products)
+                viewState.hasMorePages = response.currentPage < response.pageCount
+                viewState.state = viewState.products.isEmpty ? .noResults : .loaded
             } catch {
+                guard !Task.isCancelled else { return }
                 viewState.state = .error
             }
+            isLoadingPage = false
         }
-    
-        private func createFetchPageTask() {
-            task?.cancel()
-            task = Task {
-                await fetchPage()
+        
+        private func createFetchPageTask(page: Int, delay: Duration = .zero) {
+            fetchPageTask?.cancel()
+            isLoadingPage = true
+            let query = viewState.searchText
+            fetchPageTask = Task {
+                try? await Task.sleep(for: delay)
+                guard !Task.isCancelled else { return }
+                await fetchPage(query: query, page: page)
             }
         }
         
         private func resetSearch() {
-            currentPage = 1
+            fetchPageTask?.cancel()
+            isLoadingPage = false
+            currentPage = 0
+            viewState.state = .idle
             viewState.products = []
             viewState.hasMorePages = true
         }

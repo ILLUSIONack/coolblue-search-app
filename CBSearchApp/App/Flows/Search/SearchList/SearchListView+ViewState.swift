@@ -2,14 +2,16 @@ import Foundation
 
 extension SearchListView {
     struct ViewState {
-        var state: State = .noResults
+        var state: State = .idle
         var hasMorePages: Bool = true
         var searchText: String = ""
         var products: [Product] = []
     }
     
     enum State: Equatable {
-        case loaded(products: [Product])
+        case idle
+        case loading
+        case loaded
         case noResults
         case error
     }
