@@ -2,9 +2,11 @@ import SwiftUI
 
 @main
 struct CBSearchApp: App {
+    private let container = DependencyContainer()
+    
     var body: some Scene {
         WindowGroup {
-            CoordinatorView()
+            CoordinatorView(container: container)
         }
     }
 }
