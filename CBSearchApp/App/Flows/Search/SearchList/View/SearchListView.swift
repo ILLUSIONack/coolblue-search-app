@@ -15,32 +15,37 @@ struct SearchListView: View {
         static let errorImageName: String = "exclamationmark.warninglight.fill"
         static let searchPrompt: String = "Search Products"
         static let noResultsText: String = "Try searching for a product"
-        static let errorText: String = "An Error has occured while fetching products"
+        static let errorText: String = "An error occurred while fetching products"
+        static let navigationTitle: String = "Products"
     }
     
     var body: some View {
         ZStack {
             switch viewModel.viewState.state {
+            case .idle, .noResults:
+                noResultsView
+            case .loading:
+                ProgressView()
+            case .loaded:
+                content
             case .error:
                 errorView
-            case .noResults:
-                noResultsView
-            case .loaded(let products):
-                content(products)
             }
         }
-        .navigationTitle(viewModel.navigationTitle)
+        .navigationTitle(Constants.navigationTitle)
         .navigationBarTitleDisplayMode(.inline)
         .searchable(text: $viewModel.viewState.searchText, prompt: Constants.searchPrompt)
         .onChange(of: viewModel.viewState.searchText) { _, text in
             viewModel.searchProducts(query: text)
         }
     }
-    
-    private func content(_ products: [Product]) ->some View {
+}
+
+private extension SearchListView {
+    private var content: some View {
         ScrollView(.vertical, showsIndicators: false) {
             LazyVStack(alignment: .leading, spacing: 0) {
-                ForEach(products, id: \.productId) { product in
+                ForEach(viewModel.viewState.products, id: \.productId) { product in
                     productItemView(product)
                 }
             }

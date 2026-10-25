@@ -4,7 +4,7 @@ protocol ProductServiceProtocol: Sendable {
     func search(by query: String, page: Int) async throws -> ProductsPage
 }
 
-final class ProductService: ProductServiceProtocol {
+struct ProductService: ProductServiceProtocol {
     private let apiService: APIServiceProtocol
     
     init(apiService: APIServiceProtocol) {

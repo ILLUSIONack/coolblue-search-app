@@ -1,9 +1,12 @@
 import SwiftUI
 
 struct CoordinatorView: View {
+    @StateObject private var viewModel: ViewModel
+
+    init(container: DependencyContainerProtocol) {
+        _viewModel = StateObject(wrappedValue: ViewModel(container: container))
+    }
     
-    @StateObject private var viewModel = ViewModel(container: DependencyContainer())
-            
     var body: some View {
         NavigationStack(path: $viewModel.path) {
             albumListView

@@ -3,7 +3,7 @@ import Foundation
 extension SearchListView {
     static func build(
         container: DependencyContainerProtocol,
-        delegate: CoordinatorViewModelDelegate
+        delegate: SearchListViewModelDelegate
     ) -> SearchListView {
         let productService = container.resolveProductService()
         let viewModel = SearchListView.ViewModel(

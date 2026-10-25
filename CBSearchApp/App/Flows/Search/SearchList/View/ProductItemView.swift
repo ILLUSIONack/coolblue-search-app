@@ -30,9 +30,12 @@ struct ProductItemView: View {
         .frame(maxWidth: .infinity)
         .accessibilityRespondsToUserInteraction(true)
     }
+}
+
+private extension ProductItemView {
     
     @ViewBuilder
-    private var productImage: some View {
+    var productImage: some View {
         if let url = product.productImage {
             AsyncImage(url: url, content: { image in
                 image
@@ -48,7 +51,7 @@ struct ProductItemView: View {
     }
     
     @ViewBuilder
-    private var productName: some View {
+    var productName: some View {
         if let productName = product.productName {
             Text(productName)
                 .font(.title3)
@@ -58,7 +61,7 @@ struct ProductItemView: View {
     }
     
     @ViewBuilder
-    private var usps: some View {
+    var usps: some View {
         if let usps = product.usps {
             VStack(alignment: .leading, spacing: 0) {
                 ForEach(usps, id: \.self) { usp in
@@ -72,7 +75,7 @@ struct ProductItemView: View {
     }
     
     @ViewBuilder
-    private var price: some View {
+    var price: some View {
         if let price = product.formattedPrice {
             Text(price)
                 .font(.callout)
