@@ -51,34 +51,29 @@ final class SearchListViewModelTests: XCTestCase {
     @MainActor
     func test_performedAction_whenCalled_shouldCallDelegate() async throws {
         // Given
-        let expectation = XCTestExpectation(description: "Action performed")
-        var environment = await Environment()
-        environment.mockCoordinatorDelegate = MockCoordinatorDelegate(actionCompletion: {
-            expectation.fulfill()
-        })
+        let environment = await Environment()
         let sut = await environment.createSUT()
         
         // When
         sut.performedAction(action: .productDetailsTapped(product: Product.stub))
-        await fulfillment(of: [expectation], timeout: 5.0)
         
         // Then
-        XCTAssertTrue(environment.mockCoordinatorDelegate.getDidPerformActionValue())
+        XCTAssertTrue(environment.mockDelegate.didPerformActionIsCalled)
     }
     
     private struct Environment {
         var mockProductService: MockProductService
-        var mockCoordinatorDelegate: MockCoordinatorDelegate
+        var mockDelegate: MockSearchListViewModelDelegate
         
         init() async {
             mockProductService = MockProductService()
-            mockCoordinatorDelegate = await MockCoordinatorDelegate()
+            mockDelegate = await MockSearchListViewModelDelegate()
         }
         
         func createSUT() async -> SearchListView.ViewModel {
             await SearchListView.ViewModel(
                 productService: mockProductService,
-                delegate: mockCoordinatorDelegate
+                delegate: mockDelegate
             )
         }
     }

@@ -1,14 +1,13 @@
 import Foundation
 
 @MainActor
-protocol SearchListViewModelProtocol: ObservableObject {
-    func searchProducts(query: String)
-    func loadNextPageIfNeeded(currentProduct product: Product)
-    func performedAction(action: UserAction)
+protocol SearchListViewModelDelegate: AnyObject {
+    func didPerformAction(action: UserAction)
 }
 
 extension SearchListView {
-    final class ViewModel: SearchListViewModelProtocol {
+    @MainActor
+    final class ViewModel: ObservableObject {
         @Published var viewState: ViewState = ViewState()
         
         var navigationTitle: String = "Products"
@@ -17,9 +16,9 @@ extension SearchListView {
         
         private var currentPage = 1
         
-        weak var delegate: CoordinatorViewModelDelegate?
+        private weak var delegate: SearchListViewModelDelegate?
         
-        init(productService: ProductServiceProtocol, delegate: CoordinatorViewModelDelegate) {
+        init(productService: ProductServiceProtocol, delegate: SearchListViewModelDelegate) {
             self.productService = productService
             self.delegate = delegate
         }
@@ -70,7 +69,7 @@ extension SearchListView {
         
         // MARK: - Delegate
         func performedAction(action: UserAction) {
-            delegate?.performedAction(action: action)
+            delegate?.didPerformAction(action: action)
         }
     }
 }

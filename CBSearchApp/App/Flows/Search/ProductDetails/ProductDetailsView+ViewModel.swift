@@ -1,16 +1,17 @@
 import Foundation
 
 @MainActor
-protocol ProductDetailsViewModelProtocol: ObservableObject, AnyObject {
-    func backButtonTapped()
+protocol ProductDetailsViewModelDelegate: AnyObject {
+    func pop()
 }
 
 extension ProductDetailsView {
-    final class ViewModel: ProductDetailsViewModelProtocol {
+    @MainActor
+    final class ViewModel: ObservableObject {
         @Published var product: Product
-        weak var delegate: CoordinatorViewModelDelegate?
-
-        init (product: Product, delegate: CoordinatorViewModelDelegate) {
+        private weak var delegate: ProductDetailsViewModelDelegate?
+        
+        init(product: Product, delegate: ProductDetailsViewModelDelegate) {
             self.product = product
             self.delegate = delegate
         }
