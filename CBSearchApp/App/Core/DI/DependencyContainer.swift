@@ -6,11 +6,11 @@ protocol DependencyContainerProtocol {
 
 final class DependencyContainer: DependencyContainerProtocol {
     private let productService: ProductServiceProtocol
-    private let apiSerice: APIServiceProtocol
+    private let apiService: APIServiceProtocol
     
     init() {
-        self.apiSerice = APIService()
-        self.productService = ProductService(apiService: apiSerice)
+        self.apiService = APIService()
+        self.productService = ProductService(apiService: apiService)
     }
     
     func resolveProductService() -> ProductServiceProtocol {
